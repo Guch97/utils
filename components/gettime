@@ -1,0 +1,20 @@
+// 获取当月一号
+export function getFirstDay() {
+  const date = new Date()
+  const y = date.getFullYear()
+  const m = date.getMonth()
+  let firstDay = new Date(y, m, 1)
+  firstDay = formatDateByJSON(firstDay.getTime())
+  return firstDay
+}
+
+
+/**
+ * Description: 通过格林威治时间format
+ */
+export function formatDateByJSON(timestamp) {
+  if (!timestamp) timestamp = new Date().getTime()
+  else timestamp = new Date(timestamp).getTime()
+  const date = new Date(timestamp + 8 * 3600 * 1000)
+  return date.toJSON().substr(0, 19).replace('T', ' ').split(' ')[0]
+}

@@ -1,0 +1,143 @@
+<template>
+  <div :class="{'hidden':hidden}" class="pagination-container">
+    <el-pagination
+      :small="smallBoolean"
+      :background="background"
+      :current-page.sync="currentPage"
+      :page-size.sync="pageSize"
+      :layout="layout"
+      :pager-count.sync="pagerCount"
+      :page-sizes="pageSizes"
+      :total="total"
+      v-bind="$attrs"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
+  </div>
+</template>
+
+<script>
+import { scrollTo } from '@/utils/scroll-to'
+
+export default {
+  name: 'Pagination',
+  props: {
+    total: {
+      required: true,
+      type: Number
+    },
+    page: {
+      type: Number,
+      default: 1
+    },
+    pagerCount: {
+      type: Number,
+      default: 7
+    },
+    limit: {
+      type: Number,
+      default: 20
+    },
+    pageSizes: {
+      type: Array,
+      default() {
+        return [10, 20, 40, 60]
+      }
+    },
+    layout: {
+      type: String,
+      default: 'total, sizes, prev, pager, next, jumper'
+    },
+    background: {
+      type: Boolean,
+      default: true
+    },
+    autoScroll: {
+      type: Boolean,
+      default: true
+    },
+    hidden: {
+      type: Boolean,
+      default: false
+    },
+    smallBoolean: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: {
+    currentPage: {
+      get() {
+        return this.page
+      },
+      set(val) {
+        this.$emit('update:page', val)
+      }
+    },
+    pageSize: {
+      get() {
+        return this.limit
+      },
+      set(val) {
+        this.$emit('update:limit', val)
+      }
+    }
+  },
+  methods: {
+    handleSizeChange(val) {
+      this.$emit('pagination', { page: this.currentPage, limit: val })
+      if (this.autoScroll) {
+        scrollTo(0, 800)
+      }
+    },
+    handleCurrentChange(val) {
+      this.$emit('pagination', { page: val, limit: this.pageSize })
+      if (this.autoScroll) {
+        scrollTo(0, 800)
+      }
+    }
+  }
+}
+</script>
+
+<style scoped lang="scss">
+.pagination-container {
+  background: #fff;
+  padding: 0.08rem 0.16rem 0;
+  float: right;
+}
+.pagination-container.hidden {
+  display: none;
+}
+@media screen  and (max-width:1300px) {
+    .pagination-container{
+       margin-left:0.7rem;
+    }
+}
+.el-pagination{
+  padding: 0.02rem 0.05rem;
+  font-size: 0.13rem;
+}
+/deep/.el-pagination span:not([class*=suffix]), /deep/.el-pagination button{
+    height: 0.28rem;
+    line-height: 0.28rem;
+  font-size: 0.13rem;
+  }
+/deep/.el-pagination /deep/.el-select /deep/.el-input{
+  width: 1rem;
+  /*margin: 0.05rem;*/
+}
+/deep/.el-input--mini /deep/.el-input__inner{
+  height: 0.28rem;
+  line-height: 0.28rem;
+}
+/deep/.el-pagination__editor.el-input /deep/.el-input__inner{
+  height: 0.28rem;
+  line-height: 0.28rem;
+}
+/deep/.el-pager li{
+  height: 0.28rem;
+  line-height: 0.28rem;
+}
+
+</style>

@@ -18,3 +18,37 @@ export function formatDateByJSON(timestamp) {
   const date = new Date(timestamp + 8 * 3600 * 1000)
   return date.toJSON().substr(0, 19).replace('T', ' ').split(' ')[0]
 }
+
+
+ // 获取当前月
+      getDate(days = 0) {
+        let day = new Date()
+        day.setTime(day.getTime() - days * 24 * 60 * 60 * 1000)
+        let month = day.getMonth() + 1
+        if (month < 10) {
+          month = '0' + month
+        }
+        day = day.getFullYear() + '-' + month
+        return day
+      },
+  //转化new Date()
+      // formatDate(date){
+    //     var y = date.getFullYear();  
+    //     var m = date.getMonth() + 1;  
+    //     m = m < 10 ? ('0' + m) : m;  
+    //     var d = date.getDate();  
+    //     d = d < 10 ? ('0' + d) : d;  
+    //     var h = date.getHours();  
+    //     h=h < 10 ? ('0' + h) : h;  
+    //     var minute = date.getMinutes();  
+    //     minute = minute < 10 ? ('0' + minute) : minute;  
+    //     var second=date.getSeconds();  
+    //     second=second < 10 ? ('0' + second) : second;  
+    //     return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;  
+    // },
+    
+    
+    
+    
+    
+

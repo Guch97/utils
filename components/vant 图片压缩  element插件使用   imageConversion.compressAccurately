@@ -1,5 +1,6 @@
   
   
+       返回的是整个数组
 
       //将dataURL转成文件(file)格式
       dataURLtoFile(urlData, fileName) {

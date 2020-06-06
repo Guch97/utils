@@ -1,0 +1,108 @@
+  
+  
+
+      //将dataURL转成文件(file)格式
+      dataURLtoFile(urlData, fileName) {
+        var arr = urlData.split(","),
+          mime = arr[0].match(/:(.*?);/)[1],
+          bstr = atob(arr[1]),
+          n = bstr.length,
+          u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime }, { name: fileName });
+      },
+  
+  
+  
+  
+ 
+  
+  onRead(file){
+       this.show=true
+       if (Array.isArray(file)){
+          file.map((item,index)=>{
+        if (item.file.size > 10485760/5) {
+        console.log('上')
+        let canvas = document.createElement('canvas') // 创建Canvas对象(画布)
+        let context = canvas.getContext('2d')
+        let img = new Image()
+        img.src = item.content // 指定图1片的DataURL(图片的base64编码数据)
+        img.onload = () => {
+          canvas.width = 600 
+          canvas.height = 500
+          context.drawImage(img, 0, 0, 600, 500)
+          item.content = canvas.toDataURL(item.file.type, 5) // 0.92为默认压缩质量
+          let files = this.dataURLtoFile(item.content, item.file.name)
+          console.log(files,'files11111')
+          const data = new FormData()
+          data.append('file', files)
+          data.append('code', this.applyNo)
+          data.append('type', 'chat')
+          fileUpload(data).then(res => {
+            this.filePath.push(...res.data)
+            Toast('上传成功')
+            if(index===file.length-1){
+                this.show=false 
+            }
+          })
+        }
+      } else { 
+        console.log('下')
+        const data = new FormData()
+        data.append('file', item.file)
+        data.append('code', this.applyNo)
+        data.append('type', 'chat')
+        fileUpload(data).then(res => {
+          this.filePath.push(...res.data)
+          Toast('上传成功')
+          this.show=false
+        }).catch(error=>{
+           this.show=false
+        })
+      }
+       })
+       
+      }else{
+        console.log(file,'下')
+        if(file.file.size> 10485760/5){
+              console.log('上')
+        let canvas = document.createElement('canvas') // 创建Canvas对象(画布)
+        let context = canvas.getContext('2d')
+        let img = new Image()
+        img.src =file.content // 指定图1片的DataURL(图片的base64编码数据)
+        img.onload = () => {
+          canvas.width = 600 
+          canvas.height = 500
+          context.drawImage(img, 0, 0, 600, 500)
+          file.content = canvas.toDataURL(file.file.type, 5) // 0.92为默认压缩质量
+          let files = this.dataURLtoFile(file.content, file.file.name)
+          console.log(files,'files11111')
+          const data = new FormData()
+          data.append('file', files)
+          data.append('code', this.applyNo)
+          data.append('type', 'chat')
+          fileUpload(data).then(res => {
+            this.filePath.push(...res.data)
+            Toast('上传成功')
+             this.show=false
+          })
+        }
+        }else{
+            const data = new FormData()
+          data.append('file', file.file)
+          data.append('code', this.applyNo)
+          data.append('type', 'chat')
+          fileUpload(data).then(res => {
+            this.filePath.push(...res.data)
+            Toast('上传成功')
+            this.show=false
+          }).catch(error=>{
+            this.show=false
+          })
+        }
+      }
+       console.log(file,'file11111')
+      
+    },

@@ -1,0 +1,77 @@
+     文件下载 responseType：blob
+     图片下载 responseType：arraybuffer
+     
+     
+     getimg(item){
+         this.aimgdialog = true
+         this.imgLoading= true
+        fileDownloadimage({filePath:item.filePath,fileName:item.fileName}).then(response=>{
+             return 'data:image/png;base64,' + btoa(
+                new Uint8Array(response).reduce((data, byte) => data + String.fromCharCode(byte), '')
+              )
+              console.log('1111111111')
+            }).then(res => {
+              this.imgurl = res
+              this.imgLoading=false
+              console.log(res,'111111111')
+          }).catch(res => {
+              this.aimgdialog=false
+              this.$message({
+              message: '查看图片失败',
+              type: 'warning'
+            })
+          })
+     },
+    download(item){
+      console.log(item,'item11')
+      if(item.isImage=='1'){
+        fileDownloadimage({filePath:item.filePath,fileName:item.fileName}).then(response=>{
+            return 'data:image/png;base64,' + btoa(
+              new Uint8Array(response).reduce((data, byte) => data + String.fromCharCode(byte), '')
+            )
+          }).then(res => {
+          const link = document.createElement('a')
+          link.href = res
+          link.download = item.filePath
+          link.click()
+          document.body.removeChild(link)
+        }).catch(error => {
+          console.log(error,'error')
+          //     this.$message({
+          //     message: '下载失败',
+          //     type: 'warning'
+          //   })
+        })
+      }else{
+        if(item.isImage=='0'){      
+          console.log('222222222222')
+          fileDownloadExcel({filePath:item.filePath,fileName:item.fileName}).then(response=>{
+          console.log(response,'111111')
+          const blob = new Blob([response])
+          const fileName = item.fileName
+          const elink = document.createElement('a')
+          elink.download = fileName
+          elink.style.display = 'none'
+          elink.href = URL.createObjectURL(blob)
+          document.body.appendChild(elink)
+          elink.click()
+          URL.revokeObjectURL(elink.href)// 释放URL 对象
+          document.body.removeChild(elink)
+          // const blob = new Blob([response])
+          // const fileName = '文件'
+          // const elink = document.createElement('a')
+          // elink.download = fileName
+          // elink.style.display = 'none'
+          // elink.href = URL.createObjectURL(blob)
+          // document.body.appendChild(elink)
+          // elink.click()
+          // URL.revokeObjectURL(elink.href)// 释放URL 对象
+          // document.body.removeChild(elink)
+          }).catch(error=>{
+               this.$message({
+              message: '下载失败',
+              type: 'warning'
+            })
+          })
+        }
+      }

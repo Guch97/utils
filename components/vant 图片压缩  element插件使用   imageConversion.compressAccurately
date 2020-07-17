@@ -107,3 +107,221 @@
        console.log(file,'file11111')
       
     },
+
+
+
+element-ui
+
+  handleChangeAdd(file, fileList) {
+      this.buttonloadingtime = true
+      if (file.raw.type === 'image/png' || file.raw.type === 'image/jpeg' || file.raw.type === 'image/jpg') {
+        return new Promise((resolve, reject) => {
+          // let _URL = window.URL || window.webkitURL
+          const isLt2M = file.size / 1024 / 1024 > 2 // 判定图片大小是否小于4MB
+          // 这里需要计算出图片的长宽
+          const img = new Image()
+          img.onload = function() {
+            file.width = img.width // 获取到width放在了file属性上
+            file.height = img.height // 获取到height放在了file属性上
+            const valid = img.width > 2000 // 图片宽度大于2000
+            // console.log(11, file)
+            // 这里我只判断了图片的宽度,compressAccurately有多个参数时传入对象
+            if (valid || isLt2M) {
+              imageConversion.compressAccurately(file.raw, {
+                size: 400,
+                width: 1000 }).then(res => { // console.log(33, res)
+                resolve(res)
+              })
+            } else {
+              const res = file.raw
+              resolve(res)
+            }
+          } // 需要把图片赋值
+          img.src = URL.createObjectURL(file.raw)
+        }).then(res => {
+          const files = new window.File([res], file.name, { type: res.type })
+          const fd = new FormData()
+          fd.append('file', files)
+          fileUpload(fd).then(res => {
+            this.filePath.push(res.data[0])
+            this.buttonloadingtime = false
+          }).catch(() => {
+            this.filePath = []
+            this.buttonloadingtime = false
+          })
+        })
+      } else {
+        const fd = new FormData()
+        fd.append('file', file.raw)
+        fileUpload(fd).then(res => {
+          this.filePath.push(res.data[0])
+          this.buttonloadingtime = false
+        }).catch(() => {
+          this.filePath = []
+          this.buttonloadingtime = false
+        })
+      }
+    },
+
+
+ ///////////////////////////////////////
+ /**
+     * 将以base64的图片url数据转换为Blob 可以直接上传文件
+     * @param urlData
+     *            用url方式表示的base64图片数据
+     */
+    convertBase64UrlToBlob(urlData) {
+      var bytes = window.atob(urlData.split(',')[1]) // 去掉url的头，并转换为byte
+      // 处理异常,将ascii码小于0的转换为大于0
+      var ab = new ArrayBuffer(bytes.length)
+      var ia = new Uint8Array(ab)
+      for (var i = 0; i < bytes.length; i++) {
+        ia[i] = bytes.charCodeAt(i)
+      }
+      return new Blob([ab], { type: 'image/png' })
+    },
+     ///////////////////////////////////////
+    isAssetTypeAnImage(ext) {
+      return ['png', 'jpg', 'jpeg', 'bmp', 'gif', 'webp', 'psd', 'svg', 'tiff'].indexOf(ext.toLowerCase()) !== -1
+    },
+    
+    
+  ///////////////////////////////////////
+  /**
+ *
+ * @param file：文件对象
+ * @param obj：压缩对象width, height, quality
+ * @param callback：回调函数
+ */
+export function compressImg(file, obj, callback) {
+  const imgType = file.type || file.raw.type
+  let img = new Image()
+  img.src = file.url
+  img.onload = function () {
+    let that = this
+    let w = that.width
+    let h = that.height
+    let scale = w / h
+    w = obj.width || w
+    h = obj.height || (w / scale)
+    let quality = 0.3
+    let canvas = document.createElement('canvas')
+    let ctx = canvas.getContext('2d')
+    let anw = document.createAttribute('width')
+    anw.nodeValue = w
+    let anh = document.createAttribute('height')
+    anh.nodeValue = h
+    canvas.setAttributeNode(anw)
+    canvas.setAttributeNode(anh)
+    ctx.drawImage(that, 0, 0, w, h)
+    if (obj.quality && obj.quality <= 1 && obj.quality > 0) {
+      quality = obj.quality
+    }
+    const base64 = canvas.toDataURL(imgType, quality)
+    callback(base64)
+  }
+}
+ *
+ * @param file：文件对象
+ * @param limitSize：文件限制的大小
+ * @returns {boolean}
+ */
+export function limitFileSize(file, limitSize) {
+  let arr = ['KB', 'MB', 'GB']
+  let limit = limitSize.toUpperCase()
+  let limitNum = 0
+  for (let i = 0; i < arr.length; i++) {
+    let leval = limit.indexOf(arr[i])
+    if (leval > -1) {
+      limitNum = parseInt(limit.substr(0, leval)) * Math.pow(1024, (i + 1))
+      break
+    }
+  }
+  if (file.size > limitNum) {
+    return false
+  }
+  return true
+}
+    
+    ///////////////////////////////////////
+ handleImgChange(file, fileList) {
+      const spotIndex = file.name.lastIndexOf('.')
+      // 获取后缀
+      const ext = file.name.substr(spotIndex + 1)
+      if (!this.isAssetTypeAnImage(ext)) {
+        this.$message({
+          message: '请上传图片',
+          type: 'error',
+          duration: 3 * 1000
+        })
+        let idx = 0
+        fileList.forEach((item, index) => {
+          if (item.uid === file.uid) {
+            idx = index
+          }
+        })
+        fileList.splice(idx, 1)
+        return
+      }
+      if (!limitFileSize(file, '10MB')) {
+        let idx = 0
+        fileList.forEach((item, index) => {
+          if (item.uid === file.uid) {
+            idx = index
+          }
+        })
+        fileList.splice(idx, 1)
+        this.imgsList = fileList
+        this.$message({
+          message: '图片过大，不可超过10MB',
+          type: 'error',
+          duration: 3 * 1000
+        })
+        return
+      }
+      this.isUploadAddFile = true
+      const fd = new FormData()
+      // 随文件上传的其他参数
+      fd.append('token', this.token)
+      const this_ = this
+      compressImg(file, { quality: 0.3 }, function(base) {
+        const files = new window.File([this_.convertBase64UrlToBlob(base)], file.name, { type: base.type })
+        fd.append('files', files)
+        fileUpload(fd).then(res => {
+          this_.pictures.push({
+            uid: file.uid,
+            url: res.data[0]
+          })
+          this_.imgsList = fileList
+          this_.isUploadAddFile = false
+        }).catch(() => {
+          let idx = 0
+          fileList.forEach((item, index) => {
+            if (item.uid === file.uid) {
+              idx = index
+            }
+          })
+          fileList.splice(idx, 1)
+          this_.imgsList = fileList
+          // this_.$message({
+          //   message: '图片过大，不可超过10MB',
+          //   type: 'error',
+          //   duration: 3 * 1000
+          // })
+          this.isUploadAddFile = false
+        })
+      })
+      }
+
+
+
+
+
+
+
+
+
+
+
+
+

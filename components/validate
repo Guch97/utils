@@ -1,0 +1,30 @@
+
+const validatePassPhone = (rule, value, callback) => {
+  // 手机号验证
+  const re = /^1\d{10}$/
+  // +86 手机
+  const re1 = /^((\+86)|(86))?(13)\d{9}$/
+  // 带区号
+  const re2 = /^0\d{2,3}-?\d{7,8}$/
+  // 不带区号
+  const re3 = /^\d{7,8}$/
+
+  console.log(re.test(value), 999)
+  console.log(re1.test(value), 888)
+  console.log(re2.test(value), 777)
+  console.log(re3.test(value), 666)
+  if (re.test(value) || re1.test(value) || re2.test(value) || re3.test(value)) {
+    callback()
+  } else {
+    callback('联系电话格式错误')
+  }
+}
+
+   ident: [{ required: true, trigger: 'blur', message: '请输入身份证号码' },
+          {
+            pattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)/,
+            message: '证件号码格式有误！',
+            trigger: 'blur'
+          }
+
+       ],

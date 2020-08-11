@@ -8,7 +8,6 @@ const validatePassPhone = (rule, value, callback) => {
   const re2 = /^0\d{2,3}-?\d{7,8}$/
   // 不带区号
   const re3 = /^\d{7,8}$/
-
   console.log(re.test(value), 999)
   console.log(re1.test(value), 888)
   console.log(re2.test(value), 777)
@@ -20,11 +19,22 @@ const validatePassPhone = (rule, value, callback) => {
   }
 }
 
-   ident: [{ required: true, trigger: 'blur', message: '请输入身份证号码' },
+const validatePhone = (rule, value, callback) => {
+  if (value.length < 1) {
+    callback(new Error('请输入手机号'))
+  } else {
+    if (!(/^1[3456789]\d{9}$/.test(value))) {
+      callback('手机号输入有误，请重填')
+    }
+    callback()
+  }
+}
+
+
+ident: [{ required: true, trigger: 'blur', message: '请输入身份证号码' },
           {
             pattern: /(^[1-9]\d{5}(18|19|([23]\d))\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$)|(^[1-9]\d{5}\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\d{2}$)/,
             message: '证件号码格式有误！',
             trigger: 'blur'
           }
-
        ],

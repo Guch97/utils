@@ -20,8 +20,8 @@ export function formatDateByJSON(timestamp) {
 }
 
 
- // 获取当前月
-      getDate(days = 0) {
+ //  获取日期  day 0 第一天 
+  getDate(days = 0) {
         let day = new Date()
         day.setTime(day.getTime() - days * 24 * 60 * 60 * 1000)
         let month = day.getMonth() + 1
@@ -31,6 +31,7 @@ export function formatDateByJSON(timestamp) {
         day = day.getFullYear() + '-' + month
         return day
       },
+      
   //转化new Date()
       // formatDate(date){
     //     var y = date.getFullYear();  

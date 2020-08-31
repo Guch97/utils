@@ -1,0 +1,7 @@
+// 八位前面补0
+@params num 补全数字
+@params n  需要补全数组长度
+export function PrefixZero(num, n) {
+  return (Array(n).join(0) + num).slice(-n)
+}
+

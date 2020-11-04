@@ -44,29 +44,16 @@
         })
       }else{
         if(item.isImage=='0'){      
-          console.log('222222222222')
-          fileDownloadExcel({filePath:item.filePath,fileName:item.fileName}).then(response=>{
-          console.log(response,'111111')
-          const blob = new Blob([response])
-          const fileName = item.fileName
-          const elink = document.createElement('a')
-          elink.download = fileName
-          elink.style.display = 'none'
-          elink.href = URL.createObjectURL(blob)
-          document.body.appendChild(elink)
-          elink.click()
-          URL.revokeObjectURL(elink.href)// 释放URL 对象
-          document.body.removeChild(elink)
-          // const blob = new Blob([response])
-          // const fileName = '文件'
-          // const elink = document.createElement('a')
-          // elink.download = fileName
-          // elink.style.display = 'none'
-          // elink.href = URL.createObjectURL(blob)
-          // document.body.appendChild(elink)
-          // elink.click()
-          // URL.revokeObjectURL(elink.href)// 释放URL 对象
-          // document.body.removeChild(elink)
+           const blob = new Blob([response])
+           const fileName = '文件'
+           const elink = document.createElement('a')
+           elink.download = fileName
+           elink.style.display = 'none'
+           elink.href = URL.createObjectURL(blob)
+           document.body.appendChild(elink)
+           elink.click()
+           URL.revokeObjectURL(elink.href)// 释放URL 对象
+           document.body.removeChild(elink)
           }).catch(error=>{
                this.$message({
               message: '下载失败',
